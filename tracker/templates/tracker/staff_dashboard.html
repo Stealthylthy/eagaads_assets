@@ -1,0 +1,67 @@
+<!-- Staff Dashboard with assigned assets, maintenance log, and dark mode -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Staff Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'tracker/style.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="header">
+    <h2>Welcome, {{ request.user.username }} (Staff)</h2>
+  </div>
+
+  <div style="text-align: right; padding: 10px;">
+    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+  </div>
+
+  <div class="stats">
+    <div class="card">
+      <h3>My Assigned Assets</h3>
+      <p>{{ total_assets }}</p>
+    </div>
+    <div class="card">
+      <h3>My Maintenance Logs</h3>
+      <p>{{ total_maintenance }}</p>
+    </div>
+  </div>
+
+  <canvas id="statusChart" width="400" height="200"></canvas>
+
+  <div class="links">
+    <a href="{% url 'view_assets' %}">My Assets</a>
+    <a href="{% url 'view_maintenance' %}">Maintenance Logs</a>
+    <a href="{% url 'export_overall_report' %}">⬇️ Download Report</a>
+    <a href="{% url 'logout' %}">Logout</a>
+    <a href="{% url 'export_overall_report' %}" class="btn">⬇️ Download My Asset Report</a>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Available', 'In Use', 'Maintenance', 'Retired'],
+        datasets: [{
+          label: 'My Asset Status',
+          data: {{ chart_data|safe }},
+          backgroundColor: ['#4CAF50', '#2196F3', '#FFC107', '#f44336']
+        }]
+      }
+    });
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    window.onload = function () {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
+    };
+  </script>
+</body>
+</html>

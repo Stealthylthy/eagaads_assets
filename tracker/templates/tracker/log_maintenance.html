@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log Maintenance</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        form { width: 400px; margin: auto; background: #f9f9f9; padding: 20px; border: 1px solid #ccc; }
+        input, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
+        input[type=submit] { background: #4CAF50; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <h2>Log Maintenance for {{ asset.asset_name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Description:</label>
+        <textarea name="description" required></textarea>
+        <label>Cost (KES):</label>
+        <input type="number" name="cost" step="0.01" required />
+        <label>Date (optional):</label>
+        <input type="date" name="maintenance_date" />
+        <input type="submit" value="Submit Maintenance" />
+    </form>
+</body>
+</html>

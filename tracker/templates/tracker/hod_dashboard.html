@@ -1,0 +1,92 @@
+<!-- HOD Dashboard with dark mode, department assets, and staff list -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HOD Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'tracker/style.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="header">
+    <h2>Welcome HOD - {{ request.user.department.name }}</h2>
+  </div>
+
+  <div style="text-align: right; padding: 10px;">
+    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+  </div>
+
+  <div class="stats">
+    <div class="card">
+      <h3>Total Department Assets</h3>
+      <p>{{ total_assets }}</p>
+    </div>
+    <div class="card">
+      <h3>Maintenance Logs</h3>
+      <p>{{ total_maintenance }}</p>
+    </div>
+  </div>
+
+  <canvas id="statusChart" width="400" height="200"></canvas>
+
+  <h3 style="text-align:center; margin-top:30px;">Staff in Department</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Profile Picture</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in staff_members %}
+      <tr>
+        <td>{{ user.username }}</td>
+        <td>
+          {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" width="40" height="40" style="border-radius: 50%;">
+          {% else %}
+            <img src="{% static 'tracker/default-user.png' %}" width="40" height="40" style="border-radius: 50%;">
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="2">No staff in this department.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="links">
+    <a href="{% url 'view_assets' %}">Assets</a>
+    <a href="{% url 'view_maintenance' %}">Maintenance</a>
+    <a href="{% url 'export_overall_report' %}">⬇️ Download Overall Report</a>
+    <a href="{% url 'logout' %}">Logout</a>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Available', 'In Use', 'Maintenance', 'Retired'],
+        datasets: [{
+          label: 'Asset Status',
+          data: {{ chart_data|safe }},
+          backgroundColor: ['#4CAF50', '#2196F3', '#FFC107', '#f44336']
+        }]
+      }
+    });
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    window.onload = function () {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
+    };
+  </script>
+</body>
+</html>

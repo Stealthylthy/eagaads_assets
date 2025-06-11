@@ -1,0 +1,137 @@
+<!-- Admin Dashboard: Fully Responsive + Dark Mode + Interactive -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'tracker/style.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="header">
+    <h2>Welcome, {{ request.user.username }} (Admin)</h2>
+  </div>
+
+  <div style="text-align: right; padding: 10px;">
+    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+  </div>
+
+  <div class="stats">
+    <div class="card" onclick="showSection('assets')">
+      <h3>Total Assets</h3>
+      <p>{{ total_assets }}</p>
+    </div>
+    <div class="card" onclick="showSection('maintenance')">
+      <h3>Maintenance Logs</h3>
+      <p>{{ total_maintenance }}</p>
+      
+    </div>
+    <div class="card" onclick="showSection('users')">
+      <h3>Users</h3>
+      <p>{{ total_users }}</p>
+    </div>
+    <div class="card" onclick="showSection('departments')">
+      <h3>Departments</h3>
+      <p>{{ total_departments }}</p>
+    </div>
+  </div>
+
+  <canvas id="statusChart" width="400" height="200"></canvas>
+
+  <div class="links">
+    <a href="{% url 'view_assets' %}" class="btn">View Assets</a>
+    <a href="{% url 'view_maintenance' %}" class="btn">View Maintenance</a>
+    <a href="{% url 'export_overall_report' %}" class="btn">⬇️ Download Overall Report</a>
+    <a href="{% url 'logout' %}" class="btn">Logout</a>
+  </div>
+
+  <!-- Dynamic Sections -->
+  <div id="assets" class="section" style="display:none;">
+    <h3>All Assets</h3>
+    <table>
+      <tr><th>Serial</th><th>Name</th><th>Status</th><th>Department</th></tr>
+      {% for a in assets %}
+      <tr>
+        <td>{{ a.serial_number }}</td>
+        <td>{{ a.asset_name }}</td>
+        <td>{{ a.status }}</td>
+        <td>{{ a.department.name }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div id="maintenance" class="section" style="display:none;">
+    <h3>Maintenance Logs</h3>
+    <table>
+      <tr><th>Asset</th><th>Date</th><th>Description</th><th>Cost</th></tr>
+      {% for m in maintenance %}
+      <tr>
+        <td>{{ m.asset.asset_name }}</td>
+        <td>{{ m.maintenance_date }}</td>
+        <td>{{ m.description }}</td>
+        <td>{{ m.cost }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div id="users" class="section" style="display:none;">
+    <h3>System Users</h3>
+    <table>
+      <tr><th>Username</th><th>Role</th><th>Department</th></tr>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.username }}</td>
+        <td>{{ u.role }}</td>
+        <td>
+          {% if u.department %}{{ u.department.name }}{% else %}N/A{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div id="departments" class="section" style="display:none;">
+    <h3>Departments</h3>
+    <table>
+      <tr><th>Name</th><th>Description</th></tr>
+      {% for d in departments %}
+      <tr><td>{{ d.name }}</td><td>{{ d.description }}</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Available', 'In Use', 'Maintenance', 'Retired'],
+        datasets: [{
+          label: 'Asset Status',
+          data: {{ chart_data|safe }},
+          backgroundColor: ['#4CAF50', '#2196F3', '#FFC107', '#f44336']
+        }]
+      }
+    });
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    window.onload = function () {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
+    };
+
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+  </script>
+</body>
+</html>

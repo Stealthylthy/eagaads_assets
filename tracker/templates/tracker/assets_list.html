@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <title>Assets</title>
+    <style>
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ccc; }
+        th { background-color: #f0f0f0; }
+        h2 { text-align: center; }
+        a { display: block; text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Assets</h2>
+    <a href="{% url 'logout' %}">Logout</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Log Maintenance</th>
+                <th>Serial</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Department</th>
+                <th>Assigned To</th>
+        
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in assets %}
+            <tr>
+                <td>
+                  {% if request.user == asset.assigned_to %}
+                  <a href="{% url 'log_maintenance' asset.id %}">Log Maintenance</a>
+                 {% else %}
+                 -
+                 {% endif %}
+                 </td>
+
+                <td>{{ asset.serial_number }}</td>
+                <td>{{ asset.asset_name }}</td>
+                <td>{{ asset.get_status_display }}</td>
+                <td>{{ asset.department }}</td>
+                <td>{{ asset.assigned_to }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No assets available.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<script src="{% static 'tracker/main.js' %}"></script>
+</body>
+</html>
