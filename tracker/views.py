@@ -259,3 +259,7 @@ def export_overall_report(request):
     response['Content-Disposition'] = 'attachment; filename=overall_report.xlsx'
     wb.save(response)
     return response
+
+def run_migrations(request):
+    call_command('migrate')
+    return HttpResponse("Migrations complete.")

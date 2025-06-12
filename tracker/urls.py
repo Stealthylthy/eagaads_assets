@@ -13,4 +13,5 @@ urlpatterns = [
     path('maintenance/', views.view_maintenance, name='view_maintenance'),
     path('export/overall/', views.export_overall_report, name='export_overall_report'),
     path('collect-static/', views.collect_static_view),
+    path('run-migrations/', views.run_migrations),
 ]
