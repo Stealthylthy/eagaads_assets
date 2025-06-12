@@ -1,1 +1,1 @@
-web: gunicorn eaagads_assets.wsgi
+web: gunicorn core.wsgi
