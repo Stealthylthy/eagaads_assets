@@ -12,4 +12,5 @@ urlpatterns = [
     path('maintenance/<int:asset_id>/', views.log_maintenance, name='log_maintenance'),
     path('maintenance/', views.view_maintenance, name='view_maintenance'),
     path('export/overall/', views.export_overall_report, name='export_overall_report'),
+    path('collect-static/', views.collect_static_view),
 ]

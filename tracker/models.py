@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
+
 class User(AbstractUser):
     ROLE_CHOICES = (
         ('admin', 'Admin'),
@@ -10,6 +11,7 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staff')
     department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True, blank=True)  # Optional, for staff and HODs
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.username} ({self.role})"
